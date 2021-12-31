@@ -1,16 +1,13 @@
-# returnyoutubedislikeapp
+<img src="https://i.postimg.cc/zXkGwFMG/display.png" width=400>
 
-A new Flutter project.
+# Return Youtube Dislike App
 
-## Getting Started
+> Simple Webview App that inserts the Dislike data from the RYD API
 
-This project is a starting point for a Flutter application.
+- with automatic Dark/Light mode (restart required)
 
-A few resources to get you started if this is your first Flutter project:
+Data from https://returnyoutubedislike.com/
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+For browsers use the extensions: https://www.returnyoutubedislike.com/ (https://github.com/Anarios/return-youtube-dislike)
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<img src="https://i.postimg.cc/cHYsvRwZ/Screenshot-20211231-193814.jpg" width="25%" />
