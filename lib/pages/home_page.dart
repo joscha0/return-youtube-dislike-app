@@ -24,6 +24,7 @@ class HomePage extends GetView<HomeController> {
                 : Uri.parse(controller.url),
           ));
         },
+        onTitleChanged: controller.updateDislike,
       ),
     );
   }
