@@ -13,15 +13,11 @@ class HomeController extends GetxController {
     Uri url = await webController.getUrl() ?? Uri();
     log(url.toString());
     Map<String, dynamic> data = await getData(url.toString());
-    String source;
+    String source = "";
     if (data.isNotEmpty) {
       source = """
       document.querySelector(".slim-video-action-bar-actions").children[0].querySelector(".button-renderer-text").innerText = "${data['likes']}";
    document.querySelector(".slim-video-action-bar-actions").children[1].querySelector(".button-renderer-text").innerText = "${data['dislikes']}";
-  """;
-    } else {
-      source = """
-   document.querySelector(".slim-video-action-bar-actions").children[1].querySelector(".button-renderer-text").innerText = "error";
   """;
     }
     // try to update the dislike text 10 times
@@ -37,7 +33,6 @@ class HomeController extends GetxController {
     List<String> parts = url.split("watch?v=");
     if (parts.length > 1) {
       String id = parts[1];
-      log(id);
       Uri uri = Uri.parse(baseUrl + id);
       final response = await http.get(uri);
       if (response.statusCode == 200) {
