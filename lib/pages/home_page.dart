@@ -25,6 +25,10 @@ class HomePage extends GetView<HomeController> {
           ));
         },
         onTitleChanged: controller.updateDislike,
+        onExitFullscreen: controller.exitFullscreen,
+        onEnterFullscreen: (webController) {
+          controller.enterFullscreen(webController, context);
+        },
       ),
     );
   }

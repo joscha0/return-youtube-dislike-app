@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,7 +11,10 @@ class HomeController extends GetxController {
   final String url = "https://m.youtube.com/";
   final GlobalKey webViewKey = GlobalKey();
 
-  void updateDislike(webController, title) async {
+  bool isPortrait = true;
+
+  void updateDislike(
+      InAppWebViewController webController, String? title) async {
     Uri url = await webController.getUrl() ?? Uri();
     log(url.toString());
     Map<String, dynamic> data = await getData(url.toString());
@@ -40,5 +45,21 @@ class HomeController extends GetxController {
       }
     }
     return data;
+  }
+
+  void exitFullscreen(InAppWebViewController webController) {
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
+    // like label will get updated on fullscreen so need to reupdate
+    updateDislike(webController, '');
+  }
+
+  void enterFullscreen(
+      InAppWebViewController webController, BuildContext context) {
+    isPortrait = context.orientation == Orientation.portrait;
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+    }
   }
 }
