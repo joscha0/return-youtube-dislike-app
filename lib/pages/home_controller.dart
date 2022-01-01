@@ -13,9 +13,11 @@ class HomeController extends GetxController {
 
   bool isPortrait = true;
 
+  late InAppWebViewController webViewController;
+
   void updateDislike(
       InAppWebViewController webController, String? title) async {
-    Uri url = await webController.getUrl() ?? Uri();
+    Uri url = await webViewController.getUrl() ?? Uri();
     log(url.toString());
     Map<String, dynamic> data = await getData(url.toString());
     String source = "";
@@ -27,7 +29,7 @@ class HomeController extends GetxController {
     }
     // try to update the dislike text 10 times
     for (int i = 0; i < 10; i++) {
-      await webController.evaluateJavascript(source: source);
+      await webViewController.evaluateJavascript(source: source);
       await Future.delayed(const Duration(seconds: 1));
     }
   }
@@ -61,5 +63,31 @@ class HomeController extends GetxController {
     if (isPortrait) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
     }
+  }
+
+  Future<bool> goBack() async {
+    if (await webViewController.canGoBack()) {
+      log('back');
+      webViewController.goBack();
+    } else {
+      Get.dialog(AlertDialog(
+        title: const Text('Do you want to exit'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ));
+    }
+    return false;
   }
 }

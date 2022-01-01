@@ -26,13 +26,20 @@ class MyApp extends StatelessWidget {
           secondary: primaryColor,
           primary: primaryColor,
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.black),
+        ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-          backgroundColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            secondary: primaryColor,
-            primary: primaryColor,
-          )),
+        backgroundColor: Colors.black,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: primaryColor,
+          primary: primaryColor,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.white),
+        ),
+      ),
       themeMode: ThemeMode.system,
       home: const HomePage(),
     );
