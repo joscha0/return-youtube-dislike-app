@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,8 +13,39 @@ class HomeController extends GetxController {
   final String url = "https://m.youtube.com/";
   final GlobalKey webViewKey = GlobalKey();
 
-  void updateDislike(webController, title) async {
-    Uri url = await webController.getUrl() ?? Uri();
+  bool isPortrait = true;
+
+  late InAppWebViewController webViewController;
+
+  late StreamSubscription<ConnectivityResult> subscription;
+
+  RxBool hasInternet = true.obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    ConnectivityResult connectivityResult =
+        await (Connectivity().checkConnectivity());
+    hasInternet.value = connectivityResult != ConnectivityResult.none;
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      if (result != ConnectivityResult.none) {
+        hasInternet.value = true;
+        subscription.cancel();
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    subscription.cancel();
+  }
+
+  void updateDislike(
+      InAppWebViewController webController, String? title) async {
+    Uri url = await webViewController.getUrl() ?? Uri();
     log(url.toString());
     Map<String, dynamic> data = await getData(url.toString());
     String source = "";
@@ -22,8 +57,10 @@ class HomeController extends GetxController {
     }
     // try to update the dislike text 10 times
     for (int i = 0; i < 10; i++) {
-      await webController.evaluateJavascript(source: source);
-      await Future.delayed(const Duration(seconds: 1));
+      if (hasInternet.value) {
+        await webViewController.evaluateJavascript(source: source);
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
   }
 
@@ -40,5 +77,47 @@ class HomeController extends GetxController {
       }
     }
     return data;
+  }
+
+  void exitFullscreen(InAppWebViewController webController) {
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    }
+    // like label will get updated on fullscreen so need to reupdate
+    updateDislike(webController, '');
+  }
+
+  void enterFullscreen(
+      InAppWebViewController webController, BuildContext context) {
+    isPortrait = context.orientation == Orientation.portrait;
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
+    }
+  }
+
+  Future<bool> goBack() async {
+    if (await webViewController.canGoBack()) {
+      log('back');
+      webViewController.goBack();
+    } else {
+      Get.dialog(AlertDialog(
+        title: const Text('Do you want to exit'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () {
+              SystemNavigator.pop();
+            },
+            child: const Text('Yes'),
+          ),
+        ],
+      ));
+    }
+    return false;
   }
 }

@@ -1,9 +1,14 @@
+import 'package:flutter/services.dart';
 import 'package:returnyoutubedislikeapp/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(const MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -21,15 +26,22 @@ class MyApp extends StatelessWidget {
           secondary: primaryColor,
           primary: primaryColor,
         ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.black),
+        ),
       ),
       darkTheme: ThemeData.dark().copyWith(
-          backgroundColor: Colors.black,
-          colorScheme: ColorScheme.fromSwatch().copyWith(
-            secondary: primaryColor,
-            primary: primaryColor,
-          )),
+        backgroundColor: Colors.black,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: primaryColor,
+          primary: primaryColor,
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(primary: Colors.white),
+        ),
+      ),
       themeMode: ThemeMode.system,
-      home: HomePage(),
+      home: const HomePage(),
     );
   }
 }
