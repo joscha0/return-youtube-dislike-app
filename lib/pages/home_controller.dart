@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -14,6 +16,32 @@ class HomeController extends GetxController {
   bool isPortrait = true;
 
   late InAppWebViewController webViewController;
+
+  late StreamSubscription<ConnectivityResult> subscription;
+
+  RxBool hasInternet = true.obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    ConnectivityResult connectivityResult =
+        await (Connectivity().checkConnectivity());
+    hasInternet.value = connectivityResult != ConnectivityResult.none;
+    subscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      if (result != ConnectivityResult.none) {
+        hasInternet.value = true;
+        subscription.cancel();
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    subscription.cancel();
+  }
 
   void updateDislike(
       InAppWebViewController webController, String? title) async {
@@ -29,8 +57,10 @@ class HomeController extends GetxController {
     }
     // try to update the dislike text 10 times
     for (int i = 0; i < 10; i++) {
-      await webViewController.evaluateJavascript(source: source);
-      await Future.delayed(const Duration(seconds: 1));
+      if (hasInternet.value) {
+        await webViewController.evaluateJavascript(source: source);
+        await Future.delayed(const Duration(seconds: 1));
+      }
     }
   }
 
