@@ -21,11 +21,7 @@ class HomePage extends GetView<HomeController> {
             body: controller.hasInternet.value
                 ? InAppWebView(
                     key: controller.webViewKey,
-                    initialUrlRequest: URLRequest(
-                        url: MediaQuery.of(context).platformBrightness ==
-                                Brightness.dark
-                            ? Uri.parse(controller.url + "?theme=dark")
-                            : Uri.parse(controller.url)),
+                    initialUrlRequest: URLRequest(url: controller.defaultUrl),
                     onWebViewCreated: (webController) {
                       controller.webViewController = webController;
                     },
